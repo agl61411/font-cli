@@ -3,22 +3,7 @@
     <div class="navi-full">
       <img class="logo" src="@/assets/logo.png" />
       <h6 style="margin: 0px 20px 0px 10px;">logo</h6>
-      <el-menu
-        :default-active="defaultIndex"
-        :router="true"
-        class="el-menu-demo"
-        mode="horizontal"
-        background-color="#545c64"
-        text-color="#fff"
-        active-text-color="#ffd04b">
-        <template v-for="menu in navs" :key="menu.url">
-          <el-submenu v-if="menu.children && menu.children.length > 0" :index="menu.url">
-            <template v-slot:title>{{menu.name}}</template>
-            <el-menu-item v-for="child in menu.children" :key="child.url" :index="child.url">{{child.name}}</el-menu-item>
-          </el-submenu>
-          <el-menu-item v-else :index="menu.url">{{menu.name}}</el-menu-item>
-        </template>        
-      </el-menu>
+      <custom-menu :defaultIndex="defaultIndex" mode="horizontal" @closeDrawer="closeDrawer"/>
     </div>
     <el-button type="text" @click="openDrawer">
       <i class="el-icon-s-operation navi-simple" />
@@ -28,24 +13,7 @@
       direction="ltr"
       custom-class="drawer-style"
       :with-header="false">
-      <el-menu
-        :default-active="defaultIndex"
-        :router="true"
-        class="el-menu-vertical-demo"
-        mode="vertical"
-        background-color="#545c64"
-        text-color="#fff"
-        style="border: none;"
-        @select="closeDrawer"
-        active-text-color="#ffd04b">
-        <template v-for="menu in navs" :key="menu.url">
-          <el-submenu v-if="menu.children && menu.children.length > 0" :index="menu.url">
-            <template v-slot:title>{{menu.name}}</template>
-            <el-menu-item v-for="child in menu.children" :key="child.url" :index="child.url">{{child.name}}</el-menu-item>
-          </el-submenu>
-          <el-menu-item v-else :index="menu.url">{{menu.name}}</el-menu-item>
-        </template>  
-      </el-menu>
+      <custom-menu :defaultIndex="defaultIndex" mode="vertical" @closeDrawer="closeDrawer"/>
     </el-drawer>
     <personal-info />
   </div>
@@ -55,11 +23,13 @@
 import { navs } from './_nav.js';
 import { useRoute } from 'vue-router';
 import PersonalInfo from './PersonalInfo.vue';
+import CustomMenu from './CustomMenu';
 import { ref, watch } from 'vue';
 
 export default {
   components: {
-    PersonalInfo
+    PersonalInfo,
+    CustomMenu
   },
   setup () {
     const route = useRoute();
