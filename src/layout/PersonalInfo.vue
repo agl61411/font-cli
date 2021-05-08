@@ -2,7 +2,7 @@
   <el-row type="flex" justify="space-between" align="middle" style="width: 150px;min-width: 150px">
     <el-avatar :size="50" class="avatar-container"></el-avatar>
     <el-dropdown trigger="hover">
-      <h6 class="personal-name">传统美德传统美德</h6>
+      <h6 class="personal-name">{{info.nickname}}</h6>
       <template v-slot:dropdown>
         <el-dropdown-menu>
           <el-dropdown-item icon="el-icon-plus">黄金糕</el-dropdown-item>
@@ -17,10 +17,16 @@
 </template>
 
 <script>
+import { useStore } from 'store';
+import { reactive } from 'vue';
 export default {
   setup () {
+    const store = useStore();
+    const state = reactive({
+      info: store.getters['account/info']
+    });
     return {
-
+      ...state
     };
   }
 };
