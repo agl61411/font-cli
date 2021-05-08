@@ -1,25 +1,25 @@
 import axios from 'axios';
 
 function getHeaders (auth) {
-  const token = sessionStorage.getItem('token');
+  const info = getAccount();
 
   let headers = {};
 
   if (auth) {
-    headers['Authorization'] = 'Bearer ' + token;
+    headers['Authorization'] = 'Bearer ' + info.token;
   }
-  const accountId = getAccountId();
-  if (accountId) {
-    headers['account_id'] = accountId;
+  if (info.accountId) {
+    headers['account_id'] = info.accountId;
   }
-  console.log(headers);
   return headers;
 }
 
-function getAccountId () {
-  const accountStr = sessionStorage.getItem('account');
+function getAccount () {
+  const accountStr = sessionStorage.getItem('account_info');
   if (accountStr) {
-    return JSON.parse(accountStr)['accountId'];
+    return JSON.parse(accountStr);
+  } else {
+    return {};
   }
 }
 

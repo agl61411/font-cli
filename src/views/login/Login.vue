@@ -27,16 +27,17 @@ import {
   useRouter
 } from 'vue-router';
 
+import { useStore } from 'vuex';
+
 import LoginForm from './components/LoginForm.vue';
 import LoginBtnGroup from './components/LoginBtnGroup';
-
-import axios from 'axios';
 
 export default {
   components: { LoginForm, LoginBtnGroup },
   setup () {
     const elForm = ref();
     const router = useRouter();
+    const store = useStore();
 
     const state = reactive({
       form: {
@@ -79,7 +80,8 @@ export default {
       }
 
       // 将用户信息存储在sessionStorage
-      sessionStorage.setItem('account', JSON.stringify(result.data));
+      sessionStorage.setItem('account_info', JSON.stringify(result.data));
+      store.commit('account/info', result.data);
       router.push('/note');
     };
 

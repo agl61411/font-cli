@@ -27,4 +27,22 @@ const router = createRouter({
   routes
 });
 
+const OPEN_URL = ['/login'];
+
+router.beforeEach((to, from, next) => {
+  const infoStr = sessionStorage.getItem('info');
+
+  if ((!infoStr && OPEN_URL.some(item => item === to.url)) || infoStr) {
+    next();
+    return;
+  }
+
+  next({
+    path: '/login',
+    query: {
+      backUrl: to.fullPath
+    }
+  });
+});
+
 export default router;
