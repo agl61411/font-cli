@@ -8,7 +8,7 @@
         </el-form-item>
         <el-form-item prop="password"
           :rules="[{required: form.loginType === 'PASSWORD', message: '必填', trigger: 'change'}]">
-          <el-input v-model="form.password" placeholder="请输入" />
+          <el-input v-model="form.password" placeholder="请输入" show-password/>
         </el-form-item>
       </el-tab-pane>
       <el-tab-pane label="手机登录" name="CAPTCHA">

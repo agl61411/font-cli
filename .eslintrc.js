@@ -41,6 +41,7 @@ module.exports = {
     // 强制在注释中 // 或 /* 使用一致的空格
     'spaced-comment': [2, 'always', { 'markers': ['global', 'globals', 'eslint', 'eslint-disable', '*package', '!'] }],
     // 不允许多个空行
-    'no-multiple-empty-lines': [2, { 'max': 1 }]
+    'no-multiple-empty-lines': [2, { 'max': 1 }],
+    'no-unused-vars': 0
   }
 }

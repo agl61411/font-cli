@@ -19,7 +19,8 @@ import {
   ref,
   reactive,
   toRefs,
-  provide
+  provide,
+  getCurrentInstance
 } from 'vue';
 
 import {
@@ -28,6 +29,8 @@ import {
 
 import LoginForm from './components/LoginForm.vue';
 import LoginBtnGroup from './components/LoginBtnGroup';
+
+import axios from 'axios';
 
 export default {
   components: { LoginForm, LoginBtnGroup },
@@ -49,6 +52,8 @@ export default {
 
     provide('form', state.form);
 
+    const { ctx } = getCurrentInstance();
+
     const onLogin = () => {
       elForm.value.validate(valid => {
         if (valid) {
@@ -57,15 +62,25 @@ export default {
       });
     };
 
-    const _onLogin = () => {
+    const _onLogin = async () => {
       state.loading = true;
 
-      console.log('-----------接口调用------------');
-      setTimeout(() => {
-        // TODO 登录接口调用
-        router.push('/about');
-        state.loading = false;
-      }, 2000);
+      const url = ctx.$api.login();
+      const result = await ctx.$http.post(url, state.form, {}, false);
+
+      state.loading = false;
+
+      if (result.code === 0) {
+        ctx.$notify.error({
+          title: '错误',
+          message: result.message
+        });
+        return;
+      }
+
+      // 将用户信息存储在sessionStorage
+      sessionStorage.setItem('account', JSON.stringify(result.data));
+      router.push('/note');
     };
 
     return {

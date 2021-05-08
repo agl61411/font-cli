@@ -102,9 +102,6 @@ export default {
     });
 
     watch(date, (newV, oVal) => {
-      console.log('------------------------------------------');
-      console.log(new Date(newV.toLocaleDateString()).getTime());
-      console.log(oVal);
     });
 
     return {
