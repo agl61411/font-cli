@@ -24,7 +24,7 @@ import {
 } from 'vue';
 
 import {
-  useRouter
+  useRouter, useRoute
 } from 'vue-router';
 
 import { useStore } from 'vuex';
@@ -36,7 +36,10 @@ export default {
   components: { LoginForm, LoginBtnGroup },
   setup () {
     const elForm = ref();
+
     const router = useRouter();
+    const route = useRoute();
+    
     const store = useStore();
 
     const state = reactive({
@@ -82,7 +85,12 @@ export default {
       // 将用户信息存储在sessionStorage
       sessionStorage.setItem('account_info', JSON.stringify(result.data));
       store.commit('account/info', result.data);
-      router.push('/note');
+      
+      if (route.query && route.query.backUrl) {
+        router.push(route.query.backUrl);
+      } else {
+        router.push('/');
+      }
     };
 
     return {

@@ -30,9 +30,8 @@ const router = createRouter({
 const OPEN_URL = ['/login'];
 
 router.beforeEach((to, from, next) => {
-  const infoStr = sessionStorage.getItem('info');
-
-  if ((!infoStr && OPEN_URL.some(item => item === to.url)) || infoStr) {
+  const infoStr = sessionStorage.getItem('account_info');
+  if ((!infoStr && OPEN_URL.some(item => item === to.path)) || infoStr) {
     next();
     return;
   }

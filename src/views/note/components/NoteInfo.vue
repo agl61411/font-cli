@@ -4,12 +4,12 @@
       <el-collapse-item>
         <template v-slot:title>
           <span>日常记录
-            <span style="color: #606266" v-if="collapseData.daily.data.length > 0"> / 完成率：
+            <!-- <span style="color: #606266" v-if="collapseData.daily.data.length > 0"> / 完成率：
               <span :style="completionRateColor">{{collapseData.daily.completionRate * 100}}%</span>
-            </span>
+            </span> -->
           </span>
         </template>
-        <daily-records />
+        <!-- <daily-records /> -->
       </el-collapse-item>
       <el-collapse-item>
 
@@ -24,80 +24,47 @@ import {
   inject,
   provide,
   reactive,
-  watch
+  watch,
+  getCurrentInstance
 } from 'vue';
 import DailyRecords from './DailyRecords.vue';
 export default {
-  components: { DailyRecords },
+  // components: { DailyRecords },
   setup () {
+    const { ctx } = getCurrentInstance();
     const date = inject('date');
 
-    const state = reactive({
-      defaultTask: [{
-        id: null,
-        createdTime: '',
-        modifiedTime: '',
-        disused: false,
-        content: '',
-        longterm: false,
-        longtermTimes: [],
-        type: ''
-      }],
-      collapseData: {
-        daily: {
-          id: 122,
-          createdTime: '',
-          modifiedTime: '',
-          disused: false,
-          dailyTime: '',
-          completionRate: 1,
-          ended: true,
-          data: [
-            {
-              id: null,
-              createdTime: '',
-              modifiedTime: '',
-              disused: false,
-              content: 'afasfasfasfasfasfasf',
-              detail: 'asfsafsadfsdafkjsadhfkjsaldflkasdhfkjladshkjflhsadjklfhkasjl',
-              longterm: false,
-              defaultTaskId: '',
-              type: '',
-              completed: false,
-              completedTime: ''
-            },
-            {
-              id: null,
-              createdTime: '',
-              modifiedTime: '',
-              disused: false,
-              content: 'afasfasfasfasfasfasf',
-              detail: null,
-              longterm: false,
-              defaultTaskId: '',
-              type: '',
-              completed: true,
-              completedTime: ''
-            }
-          ]
-        },
-        consume: {
+    const getRecord = async (recordTime) => {
+      const url = ctx.$api.getDailyRecord(recordTime);
+      const result = await ctx.$http.get(url);
 
-          data: []
-        }
+      if (result.code === 0) {
+        ctx.$notify.error({
+          title: '错误',
+          message: result.message
+        });
+        return;
       }
+
+      state.record = result.data;
+    };
+
+    getRecord(date.value);
+
+    const state = reactive({
+      record: {}
     });
 
-    provide('collapseData', state.collapseData);
+    provide('record', state.record);
 
     const completionRateColor = computed(() => {
       let color = '';
-      const completionRate = state.collapseData.daily.completionRate;
-      if (completionRate < 0.6) {
-        color = 'color: #F56C6C';
-      } else if (completionRate >= 1) {
-        color = 'color: #67C23A';
-      }
+      // const completionRate = state.collapseData.daily.completionRate;
+      // if (completionRate < 0.6) {
+      //   color = 'color: #F56C6C';
+      // } else if (completionRate >= 1) {
+      //   color = 'color: #67C23A';
+      // }
       return color;
     });
 
