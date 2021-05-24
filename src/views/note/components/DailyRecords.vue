@@ -5,8 +5,8 @@
 -->
 <template>
   <el-row type="flex" justify="start">
-    <template v-if="daily">
-      <div style="width: 100%" v-for="item in daily.data" :key="item.id">
+    <template v-if="record">
+      <!-- <div style="width: 100%" v-for="item in record.data" :key="item.id">
         <div class="record-row">
           <el-row type="flex" justify="start">
             <h6 class="records-text content-text">{{item.content}}</h6>
@@ -22,10 +22,9 @@
             <h6 class="records-text detail-text" v-show="item.showDetail">{{item.detail}}</h6>
           </template>
         </collapse-transition>
-      </div>
-      <el-row type="flex" justify="end" align="middle" class="records-btn-row" v-if="!daily.ended">
-        <el-button size="mini" @click="onAdd">添加</el-button>
-        <el-button type="primary" size="mini" @click="onComplete">9527</el-button>
+      </div> -->
+      <el-row type="flex" justify="end" align="middle" class="records-btn-row">
+        <el-button type="primary" size="mini" @click="onAdd">添加</el-button>
       </el-row>
     </template>
     <template v-else>
@@ -38,20 +37,26 @@
 
 <script>
 import {
-  inject
+  inject,
+  getCurrentInstance,
+  toRefs
 } from 'vue';
 import {
   CollapseTransition
 } from '@/components';
 export default {
   components: {
-    CollapseTransition
+    // CollapseTransition
   },
-  setup () {
-    const {
-      daily
-    } = inject('collapseData');
-
+  props: {
+    record: {
+      required: true
+    }
+  },
+  setup (props, { emit }) {
+    const { ctx } = getCurrentInstance();
+    const date = inject('date');
+    
     const onAdd = () => {
       console.log('--------------------onAdd-----------------------------');
     };
@@ -60,12 +65,27 @@ export default {
       console.log('--------------------onComplete-----------------------------');
     };
 
-    const onCreate = () => {
-      console.log('--------------------onCreate-----------------------------');
+    const onCreate = async () => {
+      const form = {
+        recordTime: new Date(date.value.toLocaleDateString()).getTime()
+      };
+
+      const url = ctx.$api.createDailyRecord();
+      const result = await ctx.$http.post(url, form);
+
+      if (result.code === 0) {
+        ctx.$notify.error({
+          title: '错误',
+          message: result.message
+        });
+        return;
+      }
+
+      emit('setRecord', result.data);
     };
 
     return {
-      daily,
+      ...toRefs(props),
       onAdd,
       onComplete,
       onCreate

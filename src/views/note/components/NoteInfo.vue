@@ -9,7 +9,7 @@
             </span> -->
           </span>
         </template>
-        <!-- <daily-records /> -->
+        <daily-records :record="record" @setRecord="setRecord"/>
       </el-collapse-item>
       <el-collapse-item>
 
@@ -22,17 +22,21 @@
 import {
   computed,
   inject,
-  provide,
   reactive,
   watch,
+  ref,
   getCurrentInstance
 } from 'vue';
 import DailyRecords from './DailyRecords.vue';
 export default {
-  // components: { DailyRecords },
+  components: { DailyRecords },
   setup () {
     const { ctx } = getCurrentInstance();
     const date = inject('date');
+
+    const state = reactive({
+      record: {}
+    });
 
     const getRecord = async (recordTime) => {
       const url = ctx.$api.getDailyRecord(recordTime);
@@ -49,13 +53,8 @@ export default {
       state.record = result.data;
     };
 
-    getRecord(date.value);
-
-    const state = reactive({
-      record: {}
-    });
-
-    provide('record', state.record);
+    const recordTime = ref(new Date(date.value.toLocaleDateString()).getTime());
+    getRecord(recordTime.value);
 
     const completionRateColor = computed(() => {
       let color = '';
@@ -68,11 +67,16 @@ export default {
       return color;
     });
 
+    const setRecord = (record) => {
+      state.record = record;
+    };
+
     watch(date, (newV, oVal) => {
     });
 
     return {
       ...state,
+      setRecord,
       completionRateColor
     };
   }

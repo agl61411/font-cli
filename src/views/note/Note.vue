@@ -22,7 +22,7 @@ import NoteInfo from './components/NoteInfo';
 export default {
   components: { NoteCalendar, NoteInfo },
   setup () {
-    const date = ref(new Date(new Date().toLocaleDateString()).getTime());
+    const date = ref(new Date());
     provide('date', date);
 
     return {
