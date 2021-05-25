@@ -4,9 +4,9 @@
 * @Author L.G.Y
 -->
 <template>
-  <el-row type="flex" justify="start">
-    <template v-if="record">
-      <!-- <div style="width: 100%" v-for="item in record.data" :key="item.id">
+  <el-row type="flex" justify="start" class="daily-records">
+    <template v-if="record && record.id">
+      <div style="width: 100%" v-for="item in record.toDoList" :key="item.id">
         <div class="record-row">
           <el-row type="flex" justify="start">
             <h6 class="records-text content-text">{{item.content}}</h6>
@@ -14,7 +14,7 @@
               详情
             </el-button>
           </el-row>
-          <el-checkbox v-model="item.checked" v-if="!item.completed && !daily.ended"></el-checkbox>
+          <!-- <el-checkbox v-model="item.checked" v-if="!item.completed && !record.ended"></el-checkbox> -->
           <p v-if="item.completed">✔️</p>
         </div>
         <collapse-transition>
@@ -22,9 +22,10 @@
             <h6 class="records-text detail-text" v-show="item.showDetail">{{item.detail}}</h6>
           </template>
         </collapse-transition>
-      </div> -->
+        <el-divider direction="horizontal"></el-divider>
+      </div>
       <el-row type="flex" justify="end" align="middle" class="records-btn-row">
-        <el-button type="primary" size="mini" @click="onAdd">添加</el-button>
+        <el-button type="primary" size="mini" @click="appendVisible = true">添加</el-button>
       </el-row>
     </template>
     <template v-else>
@@ -32,6 +33,9 @@
         <el-button class="create-btn" @click="onCreate">创建今日</el-button>
       </el-row>
     </template>
+    <el-dialog v-model="appendVisible" title="添加TODO" width="400px" append-to-body :close-on-click-modal="false" :close-on-press-escape="false">
+      <record-form v-if="appendVisible" @onCancel="appendVisible = false" @onCreateToDo="onCreateToDo"/>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -39,14 +43,18 @@
 import {
   inject,
   getCurrentInstance,
-  toRefs
+  toRefs,
+  ref
 } from 'vue';
 import {
   CollapseTransition
 } from '@/components';
+
+import RecordForm from './RecordForm';
 export default {
   components: {
-    // CollapseTransition
+    RecordForm,
+    CollapseTransition
   },
   props: {
     record: {
@@ -56,6 +64,10 @@ export default {
   setup (props, { emit }) {
     const { ctx } = getCurrentInstance();
     const date = inject('date');
+
+    const appendVisible = ref(false);
+
+    const loading = inject('loading');
     
     const onAdd = () => {
       console.log('--------------------onAdd-----------------------------');
@@ -64,6 +76,10 @@ export default {
     const onComplete = () => {
       console.log('--------------------onComplete-----------------------------');
     };
+
+    // const showCheckbox = (item) => {
+    //   return !item.completed && props.record.completed 
+    // };
 
     const onCreate = async () => {
       const form = {
@@ -84,11 +100,36 @@ export default {
       emit('setRecord', result.data);
     };
 
+    const onCreateToDo = async (form) => {
+      loading.value = true;
+
+      form.recordId = props.record.id;
+
+      const url = ctx.$api.createToDo();
+      const result = await ctx.$http.post(url, form);
+
+      loading.value = false;
+
+      if (result.code === 0) {
+        ctx.$notify.error({
+          title: '错误',
+          message: result.message
+        });
+
+        return;
+      }
+
+      emit('getRecord');
+      appendVisible.value = false;
+    };
+
     return {
       ...toRefs(props),
+      appendVisible,
       onAdd,
       onComplete,
-      onCreate
+      onCreate,
+      onCreateToDo
     };
   }
 };
@@ -131,5 +172,9 @@ export default {
   .records-btn-row {
     width: 100%;
     margin-top: 20px
+  }
+
+  .daily-records:deep(.el-divider--horizontal ){
+    margin: 5px 0;
   }
 </style>

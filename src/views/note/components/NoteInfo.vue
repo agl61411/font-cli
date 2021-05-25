@@ -9,7 +9,7 @@
             </span> -->
           </span>
         </template>
-        <daily-records :record="record" @setRecord="setRecord"/>
+        <daily-records :record="record" @setRecord="setRecord" @getRecord="getRecord"/>
       </el-collapse-item>
       <el-collapse-item>
 
@@ -34,11 +34,11 @@ export default {
     const { ctx } = getCurrentInstance();
     const date = inject('date');
 
-    const state = reactive({
-      record: {}
-    });
+    let record = reactive({});
 
-    const getRecord = async (recordTime) => {
+    const getRecord = async () => {
+      const recordTime = new Date(date.value.toLocaleDateString()).getTime();
+
       const url = ctx.$api.getDailyRecord(recordTime);
       const result = await ctx.$http.get(url);
 
@@ -50,11 +50,12 @@ export default {
         return;
       }
 
-      state.record = result.data;
+      if (result.data) {
+        Object.assign(record, result.data);
+      }
     };
 
-    const recordTime = ref(new Date(date.value.toLocaleDateString()).getTime());
-    getRecord(recordTime.value);
+    getRecord();
 
     const completionRateColor = computed(() => {
       let color = '';
@@ -67,16 +68,17 @@ export default {
       return color;
     });
 
-    const setRecord = (record) => {
-      state.record = record;
+    const setRecord = (value) => {
+      record = value;
     };
 
     watch(date, (newV, oVal) => {
     });
 
     return {
-      ...state,
+      record,
       setRecord,
+      getRecord,
       completionRateColor
     };
   }

@@ -17,9 +17,25 @@ import http from '@/http/http';
 // axios 拦截器
 import '@/http/axios';
 
+import { Enums } from '@/common/enum';
+
 const app = createApp(App);
 
 app.config.globalProperties.$http = http;
 app.config.globalProperties.$api = api;
 
 app.use(store).use(router).use(ElementPlus).mount('#app');
+
+app.mixin({
+  data () {
+    return {
+      enums: Enums
+    };
+  },
+  methods: {
+    getEnumName (enumName, code) {
+      const result = Enums[enumName].find(e => e.code === code);
+      return result ? result['name'] : '';
+    }
+  }
+});

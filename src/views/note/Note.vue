@@ -23,7 +23,9 @@ export default {
   components: { NoteCalendar, NoteInfo },
   setup () {
     const date = ref(new Date());
+    const loading = ref(false);
     provide('date', date);
+    provide('loading', loading);
 
     return {
       date
