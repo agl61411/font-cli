@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import account from './modules/account';
+import dailyRecord from './modules/daily-record';
 
 export default createStore({
   state: {
@@ -9,6 +10,7 @@ export default createStore({
   actions: {
   },
   modules: {
-    account
+    account,
+    dailyRecord
   }
 });

@@ -4,8 +4,8 @@ const navs = [
     url: '/'
   }, 
   {
-    name: 'note',
-    url: '/note'
+    name: 'daily',
+    url: '/daily'
   }
 ];
 

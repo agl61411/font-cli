@@ -5,7 +5,6 @@ const stateTemp = {
 const state = JSON.parse(JSON.stringify(stateTemp));
 
 const actions = {
-  resetState: ({commit}) => commit('info', JSON.parse(JSON.stringify(stateTemp)))
 };
 
 const mutations = {

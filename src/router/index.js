@@ -9,9 +9,9 @@ const routes = [
     component: Layout,
     children: [
       {
-        path: 'note',
-        name: 'note',
-        component: () => import(/* webpackChunkName: "note" */ '@/views/note/Note.vue')
+        path: 'daily',
+        name: 'daily',
+        component: () => import(/* webpackChunkName: "note" */ '@/views/daily/index.vue')
       }
     ]
   },

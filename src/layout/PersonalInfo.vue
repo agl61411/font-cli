@@ -15,13 +15,10 @@
 <script>
 import { useStore } from 'vuex';
 import { reactive } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
 
 export default {
   setup () {
     const store = useStore();
-    const router = useRouter();
-    const route = useRoute();
     const state = reactive({
       info: store.getters['account/info']
     });
@@ -37,15 +34,9 @@ export default {
     };
 
     const logout = () => {
+      // TODO 对接logout接口
       sessionStorage.clear();
-      store.dispatch('account/resetState');
-
-      router.push({
-        path: '/login',
-        query: {
-          backUrl: route.fullPath
-        }
-      });
+      window.location.reload();
     };
 
     return {
