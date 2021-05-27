@@ -23,13 +23,14 @@ const app = createApp(App);
 
 app.config.globalProperties.$http = http;
 app.config.globalProperties.$api = api;
+app.config.globalProperties.$enums = Enums;
 
 app.use(store).use(router).use(ElementPlus).mount('#app');
 
 app.mixin({
   data () {
     return {
-      enums: Enums
+      ENUMS: Enums
     };
   },
   methods: {

@@ -40,7 +40,7 @@ export default {
   },
   put (url, data, params, auth = true) {
     let headers = getHeaders(auth);
-    return axios.delete(url, data, {
+    return axios.put(url, data, {
       headers: headers,
       params: params
     });

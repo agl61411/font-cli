@@ -3,9 +3,9 @@
     <el-col :xs="24" :md="11" style="margin-bottom: 10px">
       <el-card>
         <el-calendar v-model="state.calendar">
-          <template v-slot:dateCell="props">
-            <p :class="props.data.isSelected ? 'is-selected' : ''">
-              {{ props.data.day.split('-').slice(1).join('-') }} {{ props.data.isSelected ? '✔️' : ''}}
+          <template #dateCell="{data}">
+            <p :class="data.isSelected ? 'is-selected' : ''">
+              {{ data.day.split('-').slice(1).join('-') }} {{ data.isSelected ? '✔️' : '' }}
             </p>
           </template>
         </el-calendar>
