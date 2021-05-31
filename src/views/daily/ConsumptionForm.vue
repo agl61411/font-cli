@@ -1,6 +1,6 @@
 <!--
-* @Description: 每日记录表单
-* @Date 2021/05/23 09:40
+* @Description: 消费表单
+* @Date 2021/05/28 16:11
 * @Author L.G.Y
 -->
 <template>
@@ -10,16 +10,15 @@
                     :rules="[{ required: true, message: '请输入', tigger: 'change' }]">
         <el-input v-model.trim="form.content" style="width: 217px"></el-input>
       </el-form-item>
-      <el-form-item label=" 详情">
-        <el-input v-model.trim="form.detail" style="width: 217px"></el-input>
-      </el-form-item>
-      <el-form-item label=" 类型">
+      <el-form-item label=" 类型" prop="type"
+                    :rules="[{ required: true, message: '请选择', tigger: 'change' }]">
         <el-select v-model="form.type" style="width: 217px">
-          <el-option v-for="(value, key) in ENUMS['ToDoType']" :label="value" :value="key" :key="key" />
+          <el-option v-for="(value, key) in ENUMS['ConsumptionType']" :label="value" :value="key" :key="key" />
         </el-select>
       </el-form-item>
-      <el-form-item label=" 目标时长">
-        <el-input v-model.number="form.targetDuration" style="width: 217px"></el-input>
+      <el-form-item label=" 金额" prop="money"
+                    :rules="[{ required: true, type: 'number', message: '请输入', tigger: 'change' }]">
+        <el-input v-model.number="form.money" style="width: 217px"></el-input>
       </el-form-item>
     </el-form>
     <el-row type="flex" justify="end" align="middle">
@@ -43,9 +42,8 @@ export default {
 
     const form = reactive({
       content: '',
-      detail: '',
       type: '',
-      targetDuration: null,
+      money: null,
       recordId: null
     });
 
@@ -66,7 +64,7 @@ export default {
 
       form.recordId = state.record.id;
 
-      const url = ctx.$api.createToDo();
+      const url = ctx.$api.createConsumption();
       const result = await ctx.$http.post(url, form);
 
       store.commit('dailyRecord/loading', false);
@@ -94,6 +92,6 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 
 </style>

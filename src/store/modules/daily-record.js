@@ -30,22 +30,24 @@ const actions = {
       return;
     }
 
-    let deprecateList = [];
-    let completeList = [];
-    let otherList = [];
-
-    result.data.toDoList.forEach(item => {
-      if (item.completed) {
-        completeList.push(item);
-      } else if (item.deprecated) {
-        deprecateList.push(item);
-      } else {
-        otherList.push(item);
-      }
-    });
-
-    const toDoList = otherList.concat(completeList).concat(deprecateList);
-    result.data.toDoList = toDoList;
+    if (result.data) {
+      let deprecateList = [];
+      let completeList = [];
+      let otherList = [];
+  
+      result.data.toDoList.forEach(item => {
+        if (item.completed) {
+          completeList.push(item);
+        } else if (item.deprecated) {
+          deprecateList.push(item);
+        } else {
+          otherList.push(item);
+        }
+      });
+  
+      const toDoList = otherList.concat(completeList).concat(deprecateList);
+      result.data.toDoList = toDoList;
+    }
 
     commit('record', result.data);
   }

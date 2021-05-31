@@ -32,11 +32,5 @@ app.mixin({
     return {
       ENUMS: Enums
     };
-  },
-  methods: {
-    getEnumName (enumName, code) {
-      const result = Enums[enumName].find(e => e.code === code);
-      return result ? result['name'] : '';
-    }
   }
 });

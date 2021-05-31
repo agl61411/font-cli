@@ -1,40 +1,31 @@
 <template>
-  <el-row type="flex" justify="start" class="todo-item">
-    <template v-if="state.record">
-      <el-row :loading="state.loading" style="width: 100%">
-        <el-collapse style="width: 100%">
-          <el-collapse-item v-for="item in state.record.toDoList" :key="item.id" :name="item.id">
-            <template #title>
-              <div class="collapse-title">
-                <div>
-                  <el-checkbox v-if="isEditing && !item.deprecated && !item.completed" v-model="item.checked" style="margin-right: 4px"></el-checkbox>
-                  <span :style="item.deprecated ? 'text-decoration: line-through;color: #909399' : ''">{{item.content }}</span>
-                </div>
-                <div style="margin-right: 20px">{{item.completed ? '✔️' : ''}}</div>
-              </div>
-            </template>
-            <div style="display: flex" :style="isEditing ? 'margin-left:18px' : ''">{{item.detail}}</div>
-          </el-collapse-item>
-        </el-collapse>
-        <el-row v-if="isEditing" type="flex" justify="space-between" align="middle" class="records-btn-row">
-          <el-button size="mini" @click="selectAll">全选 / 全不选</el-button>
-          <div>
-            <el-button size="mini" @click="isEditing = false">取消</el-button>
-            <el-button size="mini" type="danger" @click="remind('DEPRECATE')">放弃</el-button>
-            <el-button size="mini" type="success" @click="remind('COMPLETE')">完成</el-button>
+  <el-row v-loading="loading" class="todo-item">
+    <el-collapse style="width: 100%">
+      <el-collapse-item v-for="item in state.record.toDoList" :key="item.id" :name="item.id">
+        <template #title>
+          <div class="collapse-title">
+            <div>
+              <el-checkbox v-if="isEditing && !item.deprecated && !item.completed" v-model="item.checked" style="margin-right: 4px"></el-checkbox>
+              <span :style="item.deprecated ? 'text-decoration: line-through;color: #909399' : ''">{{item.content }}</span>
+            </div>
+            <div style="margin-right: 20px">{{item.completed ? '✔️' : ''}}</div>
           </div>
-        </el-row>
-        <el-row v-else type="flex" justify="end" align="middle" class="records-btn-row">
-          <el-button v-if="state.record.toDoList.length > 0" size="mini" @click="isEditing = true">编辑</el-button>
-          <el-button type="primary" size="mini" @click="appendVisible = true">添加</el-button>
-        </el-row>
-      </el-row>
-    </template>
-    <template v-else>
-      <el-row style="width: 100%" type="flex" justify="center" align="middle">
-        <el-button class="create-btn" @click="onCreate" :loading="state.loading">创建今日</el-button>
-      </el-row>
-    </template>
+        </template>
+        <div style="display: flex" :style="isEditing ? 'margin-left:18px' : ''">{{item.detail}}</div>
+      </el-collapse-item>
+    </el-collapse>
+    <el-row v-if="isEditing" type="flex" justify="space-between" align="middle" class="records-btn-row">
+      <el-button size="mini" @click="selectAll">全选 / 全不选</el-button>
+      <div>
+        <el-button size="mini" @click="isEditing = false">取消</el-button>
+        <el-button size="mini" type="danger" @click="remind('DEPRECATE')">放弃</el-button>
+        <el-button size="mini" type="success" @click="remind('COMPLETE')">完成</el-button>
+      </div>
+    </el-row>
+    <el-row v-else type="flex" justify="end" align="middle" class="records-btn-row">
+      <el-button v-if="state.record.toDoList.length > 0" size="mini" @click="isEditing = true">编辑</el-button>
+      <el-button type="primary" size="mini" @click="appendVisible = true">添加</el-button>
+    </el-row>
   </el-row>
   <el-dialog v-model="appendVisible" title="创建TODO项" width="400px" append-to-body :close-on-click-modal="false" :close-on-press-escape="false">
     <record-form v-if="appendVisible" @onCloseDialog="appendVisible = false"/>
@@ -58,11 +49,12 @@ export default {
   },
   setup () {
     const { ctx } = getCurrentInstance();
-  
+
     const store = useStore();
     const state = reactive(store.getters['dailyRecord/state']);
     const appendVisible = ref(false);
     const isEditing = ref(false);
+    const loading = ref(false);
 
     const selectAll = () => {
       if (state.record.toDoList.every(item => item.checked)) {
@@ -70,25 +62,6 @@ export default {
       } else {
         state.record.toDoList.forEach(item => item.checked = true);
       }
-    };
-
-    const onCreate = async () => {
-      const form = {
-        recordTime: new Date(state.calendar.toLocaleDateString()).getTime()
-      };
-
-      const url = ctx.$api.createDailyRecord();
-      const result = await ctx.$http.post(url, form);
-
-      if (result.code === 0) {
-        ctx.$notify.error({
-          title: '错误',
-          message: result.message
-        });
-        return;
-      }
-
-      store.commit('dailyRecord/record', result.data);
     };
 
     const remind = (operation) => {
@@ -122,11 +95,14 @@ export default {
     };
 
     const onDeprecate = async (ids) => {
+      loading.value = true;
 
       const url = ctx.$api.deprecateToDos();
       const result = await ctx.$http.put(url, {
         ids: ids
       });
+
+      loading.value = false;
 
       if (result.code === 0) {
         ctx.$notify.error({
@@ -141,11 +117,14 @@ export default {
     };
 
     const onComplete = async (ids) => {
+      loading.value = true;
 
       const url = ctx.$api.completeToDos();
       const result = await ctx.$http.put(url, {
         ids: ids
       });
+
+      loading.value = false;
 
       if (result.code === 0) {
         ctx.$notify.error({
@@ -165,7 +144,7 @@ export default {
       isEditing,
       selectAll,
       remind,
-      onCreate
+      loading
     };
   }
 };
@@ -174,11 +153,6 @@ export default {
 <style scoped>
   .todo-container {
     display: flex;
-  }
-
-  .create-btn {
-    width: 200px;
-    height: 123.6px;
   }
 
   .records-text {
